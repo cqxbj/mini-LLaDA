@@ -7,7 +7,7 @@ from tqdm import tqdm
 import os
 from model import LLaDA
 from datasets import load_from_disk
-from transformers import AutoTokenizer
+from transformers import AutoTokenizer, get_cosine_schedule_with_warmup
 from config import *
 from helper import get_device, validate_config,load_model
 import random
@@ -127,14 +127,17 @@ def train_model():
     batch_size = cfg.BATCH_SIZE
     learning_rate = cfg.LEARNING_RATE
     epochs = cfg.EPOCHS
-    save_steps = cfg.SAVE_EVERY
+    eval_every = cfg.EVAL_EVERY
+    save_every_epoch = cfg.SAVE_EVERY
     output_dir = cfg.CHECKPOINT_DIR
+    number_worker = cfg.NUMBER_WORKER
+    val_pass = cfg.VAL_PASSES
 
     # Initialize model
     tokenizer = AutoTokenizer.from_pretrained(TOKENIZER_DIR)
 
     model = LLaDA()
-    # checkpoint_path = os.path.join(CHECKPOINT_DIR, "final_model.pth")
+    # checkpoint_path = os.path.join(CHECKPOINT_DIR, "final_model-1.29.pth")
     # model, _ = load_model(checkpoint_path=checkpoint_path)    
     model.to(device)
 
@@ -152,12 +155,14 @@ def train_model():
         batch_size=batch_size,
         shuffle=True,
         collate_fn=collator,
+        num_workers=number_worker
     )
     val_dataloader = DataLoader(
         val_dataset,
         batch_size=batch_size,
         shuffle=False,
         collate_fn=collator,
+        num_workers=number_worker
     )
 
     print(f"Data: train={len(train_dataset)}, val={len(val_dataset)} "
@@ -167,11 +172,12 @@ def train_model():
     optimizer = AdamW(model.parameters(), lr=learning_rate)
 
     total_steps = len(train_dataloader) * epochs
-    # scheduler = get_linear_schedule_with_warmup(
-    #     optimizer,
-    #     num_warmup_steps=warmup_steps,
-    #     num_training_steps=total_steps
-    # )
+    warmup_steps = int(total_steps * 0.01)
+    scheduler = get_cosine_schedule_with_warmup(
+        optimizer,
+        num_warmup_steps=warmup_steps,
+        num_training_steps=total_steps
+    )
 
     # Training loop
     model.train()
@@ -188,7 +194,7 @@ def train_model():
     print(f"  Non-trainable parameters: {total_params - trainable_params:,}")
     print(f"Total steps: {total_steps} needs to complete")
 
-    best_val_loss = float('inf')
+
     best_epoch = 0
 
     for epoch in range(epochs):
@@ -212,7 +218,7 @@ def train_model():
 
             # Update parameters
             optimizer.step()
-            # scheduler.step()
+            scheduler.step()
             optimizer.zero_grad()
 
             global_step += 1
@@ -221,39 +227,28 @@ def train_model():
                 'loss': f'{loss.item():.4f}',
             })
             epoch_loss += loss.item()
-            # Save checkpoint periodically
-            if global_step % save_steps == 0:
-                checkpoint_path = os.path.join(output_dir, f"checkpoint-{global_step}")
+
+
+        avg_train_loss = epoch_loss / len(train_dataloader)
+        print(f"  Epoch {epoch+1} avg loss: {avg_train_loss:.4f}")
+
+        # ---- Validation ----
+        if (epoch + 1) % eval_every == 0:
+            val_loss = evaluate(model, val_dataloader, device, val_pass)
+            print(f"  Epoch {epoch+1}: "
+                  f"train_loss={avg_train_loss:.4f}  "
+                  f"val_loss={val_loss:.4f}")
+            
+        # ----  Save checkpoint ----
+        if  (epoch + 1) % save_every_epoch == 0:
+                checkpoint_path = os.path.join(output_dir, f"checkpoint-{epoch+1}")
                 os.makedirs(checkpoint_path, exist_ok=True)
 
                 torch.save({
                     'model_state_dict': model.state_dict(),
-                    'optimizer_state_dict': optimizer.state_dict(),
-                    "epoch": epoch,
-                    "global_step": global_step,
                 }, os.path.join(checkpoint_path, "model_checkpoint.pth"))
 
                 print(f"Saved checkpoint at step {global_step}")
-
-        avg_train_loss = epoch_loss / len(train_dataloader)
-
-        # ---- Validation ----
-        if (epoch + 1) % cfg.VAL_EVERY == 0:
-            val_loss = evaluate(model, val_dataloader, device, cfg.VAL_PASSES)
-            print(f"  Epoch {epoch+1}: "
-                  f"train_loss={avg_train_loss:.4f}  "
-                  f"val_loss={val_loss:.4f}")
-
-        #     if val_loss < best_val_loss:
-        #         best_val_loss = val_loss
-        #         best_epoch = epoch + 1
-        #         torch.save(
-        #             {"model_state_dict": model.state_dict()},
-        #             os.path.join(CHECKPOINT_DIR, "best_model.pth"),
-        #         )
-        #         print(f"  >>> Best model saved (val_loss={val_loss:.4f})")
-        # else:
-        #     print(f"  Epoch {epoch+1} avg loss: {avg_train_loss:.4f}")
 
     # Save final model
     os.makedirs(output_dir, exist_ok=True)
@@ -263,11 +258,6 @@ def train_model():
     )
 
     print(f"Training completed! Final model saved.")
-    if best_val_loss < float('inf'):
-        print(f"Best model: epoch {best_epoch}, val_loss={best_val_loss:.4f}  "
-              f"→ saved as best_model.pth")
-
-
 
 if __name__ == "__main__":
     validate_config()

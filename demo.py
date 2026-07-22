@@ -6,8 +6,8 @@ import os
 
 
 def main():
-    checkpoint_path = os.path.join(CHECKPOINT_DIR, "final_model.pth")
-    model, device = load_model(checkpoint_path=checkpoint_path)
+    checkpoint_path = os.path.join(CHECKPOINT_DIR, "final_model-1.29.pth")
+    model, _ = load_model(checkpoint_path=checkpoint_path)
 
     ds = load_from_disk(os.path.join(DATA_DIR, "tokenized_tinystories_dataset"))
 
@@ -20,10 +20,10 @@ def main():
         # Generate with low-confidence remasking (better quality)
         # show_mode: "decoding" = gradual reveal (###### → text)
         #            "correction" = raw predictions before masking (model "changing its mind")
-        generated = random_remasking_inference(
+        generated = low_confidence_remasking_inference(
             model, 
             prompt_ids=prompt_ids,
-            sampling_steps=128, 
+            sampling_steps = 100, 
             max_length=MAX_SEQ_LEN,
             show_each_step=True,
             show_mode="decoding",  
