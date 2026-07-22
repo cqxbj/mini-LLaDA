@@ -23,7 +23,7 @@ def main():
         generated = random_remasking_inference(
             model, 
             prompt_ids=prompt_ids,
-            sampling_steps=100, 
+            sampling_steps=128, 
             max_length=MAX_SEQ_LEN,
             show_each_step=True,
             show_mode="decoding",  
