@@ -1,0 +1,54 @@
+{
+  "builder_name": "parquet",
+  "citation": "",
+  "config_name": "default",
+  "dataset_name": "tiny_stories",
+  "dataset_size": 1930726793,
+  "description": "",
+  "download_size": 1000775442,
+  "features": {
+    "input_ids": {
+      "feature": {
+        "dtype": "int32",
+        "_type": "Value"
+      },
+      "_type": "List"
+    },
+    "attention_mask": {
+      "feature": {
+        "dtype": "int8",
+        "_type": "Value"
+      },
+      "_type": "List"
+    }
+  },
+  "homepage": "",
+  "license": "",
+  "size_in_bytes": 2931502235,
+  "splits": {
+    "train": {
+      "name": "train",
+      "num_bytes": 1911420483,
+      "num_examples": 2119719,
+      "shard_lengths": [
+        552930,
+        553930,
+        556930,
+        455929
+      ],
+      "dataset_name": "tiny_stories"
+    },
+    "validation": {
+      "name": "validation",
+      "num_bytes": 19306310,
+      "num_examples": 21990,
+      "dataset_name": "tiny_stories"
+    }
+  },
+  "version": {
+    "version_str": "0.0.0",
+    "major": 0,
+    "minor": 0,
+    "patch": 0
+  }
+}

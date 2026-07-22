@@ -1,0 +1,21 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+dist/
+build/
+analysis/
+checkpoints/
+
+# macOS
+.DS_Store
+
+# IDE
+.vscode/
+.idea
+
+# Workflow artifacts
+.claude/
+
+TODO.md
+CLAUDE.MD
