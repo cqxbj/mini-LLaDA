@@ -8,7 +8,8 @@
 
 A demo project for LLaDA — a diffusion language model based on a Transformer encoder that generates text through iterative **de-masking**.
 
-> **Note**: The current model is trained only on a small dataset with 128-token sequences and **does not have strong reasoning ability**. This project is intended for **algorithm reproduction and inference flow demonstration** of the LLaDA diffusion language model.
+> [!NOTE]
+> The current model is trained only on a small dataset with 128-token sequences and **does not have strong reasoning ability**. This project is intended for **algorithm reproduction and inference flow demonstration** of the LLaDA diffusion language model.
 
 ## Quick Start
 
@@ -109,7 +110,8 @@ All hyperparameters are defined in [config.py](config.py). See [model.py](model.
 
 LLaDA 的推理演示项目——基于 Transformer 编码器的扩散语言模型，通过**去掩码**的方式生成文本。
 
-> **注意**：当前模型仅在小数据集上完成了 128 token 长度的训练，**不具备较强的推理能力**。本项目目前用于 LLaDA 扩散语言模型的**算法复现与推理流程演示**。
+> [!NOTE]
+> 当前模型仅在小数据集上完成了 128 token 长度的训练，**不具备较强的推理能力**。本项目目前用于 LLaDA 扩散语言模型的**算法复现与推理流程演示**。
 
 ## 快速开始
 
