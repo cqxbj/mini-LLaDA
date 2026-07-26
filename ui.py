@@ -345,9 +345,10 @@ def build_app():
                     choices=checkpoints, value=default_ckpt, label="模型权重",
                 )
                 prompt = gr.Textbox(
-                    label="Prompt（至少 32 token，超长将截断；TinyStories 风格效果更好）",
+                    label="Prompt（点击「随机数据集示例」生成）",
                     value="Once upon a time, there was a little girl named Lily. She loved to play outside in the park with her best friend. One sunny day, they found a big red ball near the slide.",
                     lines=3,
+                    interactive=False,
                 )
                 rand_btn = gr.Button("随机数据集示例", size="sm")
                 algo = gr.Radio(
