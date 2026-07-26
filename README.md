@@ -26,7 +26,7 @@ A pre-trained model checkpoint (`checkpoints/final_model.pth`) is included in th
 ### 1. Install dependencies
 
 ```bash
-pip install torch transformers datasets tokenizers tqdm
+pip install torch transformers datasets tokenizers tqdm gradio
 ```
 
 ### 2. Run the demo
@@ -36,6 +36,26 @@ python demo.py
 ```
 
 This loads the pre-trained model and generates text with an animated de-masking visualization. You can switch between `"decoding"` (gradual reveal) and `"correction"` (watch the model revise its predictions) display modes in `demo.py`.
+
+### 3. Run the web UI (optional)
+
+A lightweight [Gradio](https://www.gradio.app/)-based web frontend that streams the diffusion decoding process live:
+
+<div align="center">
+  <img src="assets/web_ui.png" width="100%" alt="LLaDA web UI" />
+</div>
+
+```bash
+python ui.py
+```
+
+Features:
+
+- Select any checkpoint from `checkpoints/`
+- Enter a prompt, or click to draw a random 32-token prefix from the training subset (first 10,000 TinyStories samples)
+- The prompt is forced to exactly 32 tokens (truncated if longer, rejected if shorter), matching the fixed unmasked prefix used during training
+- Switch between the two remasking algorithms (low-confidence / random) and the two display modes (`decoding` / `correction`)
+- Live animation of the de-masking process with per-step stats (progress, newly decoded, revisions)
 
 ## Pre-trained Model
 
@@ -68,10 +88,12 @@ All hyperparameters are defined in [config.py](config.py). See [model.py](model.
 ├── inference.py      # Inference algorithms (random / low-confidence remasking)
 ├── train.py          # Training script (diffusion loss)
 ├── demo.py           # Run the demo
+├── ui.py             # Gradio web UI (live de-masking animation)
 ├── config.py         # Hyperparameters
 ├── helper.py         # Utilities (model loading, device detection)
 ├── my_tokenizer/     # Custom tokenizer (vocab 10,000)
-├── assets/           # README demo images (GIF)
+├── papers/           # LLaDA paper (PDF)
+├── assets/           # README demo images (GIF/PNG)
 └── checkpoints/      # Model weights
 ```
 
@@ -96,7 +118,7 @@ LLaDA 的推理演示项目——基于 Transformer 编码器的扩散语言模�
 ### 1. 安装依赖
 
 ```bash
-pip install torch transformers datasets tokenizers tqdm
+pip install torch transformers datasets tokenizers tqdm gradio
 ```
 
 ### 2. 运行 demo
@@ -106,6 +128,26 @@ python demo.py
 ```
 
 加载预训练模型，生成文本并展示去掩码动画。可在 `demo.py` 中切换 `"decoding"`（逐步显现）和 `"correction"`（观察模型修正预测）两种显示模式。
+
+### 3. 运行 Web 界面（可选）
+
+基于 [Gradio](https://www.gradio.app/) 的轻量前端，实时流式展示扩散解码全过程：
+
+<div align="center">
+  <img src="assets/web_ui.png" width="100%" alt="LLaDA web UI" />
+</div>
+
+```bash
+python ui.py
+```
+
+功能：
+
+- 自由选择 `checkpoints/` 下的模型权重
+- 手动输入 prompt，或一键从训练子集（TinyStories 前 10,000 条）随机抽取 32 token 开头
+- prompt 强制对齐为 32 token（超长截断、不足拒绝），与训练时固定 32 token 未掩码前缀的设定保持一致
+- 两种重掩码算法（低置信度 / 随机）与两种显示模式（`decoding` / `correction`）随意切换
+- 去掩码过程实时动画，附每步统计（解码进度、新增 token、修正次数）
 
 ## 预训练模型
 
@@ -138,10 +180,12 @@ python demo.py
 ├── inference.py      # 推理算法（random / low-confidence remasking）
 ├── train.py          # 训练脚本（扩散损失）
 ├── demo.py           # 运行 demo
+├── ui.py             # Gradio Web 前端（实时去掩码动画）
 ├── config.py         # 超参数
 ├── helper.py         # 工具函数（加载模型、设备检测）
 ├── my_tokenizer/     # 自定义 tokenizer（vocab 10,000）
-├── assets/           # README 演示图片（GIF）
+├── papers/           # LLaDA 原论文（PDF）
+├── assets/           # README 演示图片（GIF/PNG）
 └── checkpoints/      # 模型权重
 ```
 
