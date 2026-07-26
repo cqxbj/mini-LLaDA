@@ -2,20 +2,11 @@
 
 **English** | [中文](#中文说明)
 
-A demo project for LLaDA — a diffusion language model based on a Transformer encoder that generates text through iterative **de-masking**.
-
 <div align="center">
-  <table>
-    <tr>
-      <td align="center"><b>Decoding (gradual de-masking)</b></td>
-      <td align="center"><b>Correction</b>: show raw predictions at each step to observe how the model revises its output</td>
-    </tr>
-    <tr>
-      <td><img src="assets/video_demo.gif" width="100%" alt="LLaDA decoding demo" /></td>
-      <td><img src="assets/correction.gif" width="100%" alt="LLaDA correction demo" /></td>
-    </tr>
-  </table>
+  <img src="assets/web_ui.png" width="100%" alt="LLaDA web UI" />
 </div>
+
+A demo project for LLaDA — a diffusion language model based on a Transformer encoder that generates text through iterative **de-masking**.
 
 > **Note**: The current model is trained only on a small dataset with 128-token sequences and **does not have strong reasoning ability**. This project is intended for **algorithm reproduction and inference flow demonstration** of the LLaDA diffusion language model.
 
@@ -37,13 +28,22 @@ python demo.py
 
 This loads the pre-trained model and generates text with an animated de-masking visualization. You can switch between `"decoding"` (gradual reveal) and `"correction"` (watch the model revise its predictions) display modes in `demo.py`.
 
+<div align="center">
+  <table>
+    <tr>
+      <td align="center"><b>Decoding (gradual de-masking)</b></td>
+      <td align="center"><b>Correction</b>: show raw predictions at each step to observe how the model revises its output</td>
+    </tr>
+    <tr>
+      <td><img src="assets/video_demo.gif" width="100%" alt="LLaDA decoding demo" /></td>
+      <td><img src="assets/correction.gif" width="100%" alt="LLaDA correction demo" /></td>
+    </tr>
+  </table>
+</div>
+
 ### 3. Run the web UI (optional)
 
-A lightweight [Gradio](https://www.gradio.app/)-based web frontend that streams the diffusion decoding process live:
-
-<div align="center">
-  <img src="assets/web_ui.png" width="100%" alt="LLaDA web UI" />
-</div>
+A lightweight [Gradio](https://www.gradio.app/)-based web frontend (screenshot at the top of this page) that streams the diffusion decoding process live:
 
 ```bash
 python ui.py
@@ -131,11 +131,7 @@ python demo.py
 
 ### 3. 运行 Web 界面（可选）
 
-基于 [Gradio](https://www.gradio.app/) 的轻量前端，实时流式展示扩散解码全过程：
-
-<div align="center">
-  <img src="assets/web_ui.png" width="100%" alt="LLaDA web UI" />
-</div>
+基于 [Gradio](https://www.gradio.app/) 的轻量前端（界面截图见本页顶部），实时流式展示扩散解码全过程：
 
 ```bash
 python ui.py
