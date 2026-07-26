@@ -3,7 +3,7 @@
 **English** | [中文](#中文说明)
 
 <div align="center">
-  <img src="assets/web_ui.png" width="100%" alt="LLaDA web UI" />
+  <img src="assets/ui.png" width="80%" alt="LLaDA web UI" />
 </div>
 
 A demo project for LLaDA — a diffusion language model based on a Transformer encoder that generates text through iterative **de-masking**.
