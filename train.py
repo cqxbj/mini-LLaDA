@@ -15,6 +15,25 @@ import config as cfg
 
 
 class LLaDADataCollator:
+    """
+    Noise-level sampling here differs slightly from the LLaDA paper
+    (arXiv:2502.09992, §3 / Algorithm 2):
+
+      - Paper: draw t CONTINUOUSLY from U(0, 1], then mask each token
+        independently with probability t. Since the loss carries a 1/t
+        factor, t → 0 makes the weight unbounded and requires eps-clamping.
+      - Here: draw t from a DISCRETE uniform grid of `diffusion_steps`
+        levels, i.e. t = k / S with k ~ randint(1, S), so t ∈ {1/S, ..., 1}.
+
+    Why the discrete version is fine (and arguably nicer for this demo):
+      1. With S = 128 the grid is a close approximation of U(0, 1];
+         every noise level is trained with equal probability.
+      2. t >= 1/S always, so the 1/t loss weight is naturally bounded
+         by S — no eps-clamping or other numerical hacks needed.
+      3. The grid matches the discrete time schedule used at inference
+         (sampling_steps), keeping train/test noise levels aligned.
+    """
+
     def __init__(self, mask_token_id, diffusion_steps=DIFFUSION_STEPS):
         """
         Args:
@@ -37,6 +56,8 @@ class LLaDADataCollator:
         for i in range(batch_size):
             prompt_len = cfg.PROMPT_LEN
 
+            # Discrete noise level: t = k/S, k ∈ {1, ..., S}
+            # (paper samples t ~ U(0, 1] continuously; see class docstring)
             t_int = random.randint(1, self.diffusion_steps)
             t = t_int / self.diffusion_steps
             t_values[i] = t
